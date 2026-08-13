@@ -97,7 +97,7 @@ LANDSCAPE_POSTER = bool(environ.get('LANDSCAPE_POSTER', True)) # Shows landscape
 # ============================
 # Verification Settings
 # ============================
-IS_VERIFY = is_enabled('IS_VERIFY', False)  # Verification On (True) / Off (False)
+IS_VERIFY = is_enabled('IS_VERIFY', True)  # Verification On (True) / Off (False)
 LOG_VR_CHANNEL = int(environ.get('LOG_VR_CHANNEL', '-1004493777815')) #Verification Channel Id 
 LOG_API_CHANNEL = int(environ.get('LOG_API_CHANNEL', '-1004495110530')) #If Anyone Set Your Bot In Any Group And Set Shortner In That Group Then In This Channel The All Details Come
 VERIFY_IMG = environ.get("VERIFY_IMG", "https://telegra.ph/file/9ecc5d6e4df5b83424896.jpg")
@@ -107,14 +107,14 @@ TUTORIAL_2 = environ.get("TUTORIAL_2", "https://t.me/dreamxbotz")   # Second tut
 TUTORIAL_3 = environ.get("TUTORIAL_3", "https://t.me/dreamxbotz")   # Third tutorial link for verification
 
 # Verification (Must Fill All Veriables. Else You Got Error
-SHORTENER_API = environ.get("SHORTENER_API", "b5fcb2bfdbae39650d41b2ec52af53e82f7922f0") # Shortener API key
-SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "Shortxlinks.com") # Shortener website
+SHORTENER_API = environ.get("SHORTENER_API", " K?K9TQQ??1") # Shortener API key
+SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "streaam.net") # Shortener website
 
-SHORTENER_API2 = environ.get("SHORTENER_API2", "b5fcb2bfdbae39650d41b2ec52af53e82f7922f0")  # Shortener API key for second website
-SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "Shortxlinks.com") # Shortener website for second website
+SHORTENER_API2 = environ.get("SHORTENER_API2", " K?K9TQQ??1")  # Shortener API key for second website
+SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "streaam.net") # Shortener website for second website
 
-SHORTENER_API3 = environ.get("SHORTENER_API3", "b5fcb2bfdbae39650d41b2ec52af53e82f7922f0")  
-SHORTENER_WEBSITE3 = environ.get("SHORTENER_WEBSITE3", "Shortxlinks.com") # Shortener website for third website
+SHORTENER_API3 = environ.get("SHORTENER_API3", " K?K9TQQ??1")  
+SHORTENER_WEBSITE3 = environ.get("SHORTENER_WEBSITE3", "streaam.net") # Shortener website for third website
 
 TWO_VERIFY_GAP = int(environ.get('TWO_VERIFY_GAP', "1200")) # Time gap for two-step verification in seconds (default: 20 minutes)
 THREE_VERIFY_GAP = int(environ.get('THREE_VERIFY_GAP', "54000"))    
