@@ -107,13 +107,13 @@ TUTORIAL_2 = environ.get("TUTORIAL_2", "https://t.me/dreamxbotz")   # Second tut
 TUTORIAL_3 = environ.get("TUTORIAL_3", "https://t.me/dreamxbotz")   # Third tutorial link for verification
 
 # Verification (Must Fill All Veriables. Else You Got Error
-SHORTENER_API = environ.get("SHORTENER_API", "K?K9TQQ??1") # Shortener API key
-SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "streaam.net") # Shortener website
+SHORTENER_API = environ.get("SHORTENER_API", "b5fcb2bfdbae39650d41b2ec52af53e82f7922f0") # Shortener API key
+SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "Shortxlinks.com") # Shortener website
 
-SHORTENER_API2 = environ.get("SHORTENER_API2", "K?K9TQQ??1")  # Shortener API key for second website
-SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "streaam.net") # Shortener website for second website
+SHORTENER_API2 = environ.get("SHORTENER_API2", "7315d248850191c0037592e9869b3f3697287c7d")  # Shortener API key for second website
+SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "vplink.in") # Shortener website for second website
 
-SHORTENER_API3 = environ.get("SHORTENER_API3", "K?K9TQQ??1")  
+SHORTENER_API3 = environ.get("SHORTENER_API3", "K?K9TQQ?1")  
 SHORTENER_WEBSITE3 = environ.get("SHORTENER_WEBSITE3", "streaam.net") # Shortener website for third website
 
 TWO_VERIFY_GAP = int(environ.get('TWO_VERIFY_GAP', "1200")) # Time gap for two-step verification in seconds (default: 20 minutes)
