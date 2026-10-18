@@ -136,10 +136,6 @@ async def refercall(bot, query):
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
-    try:
-        await query.answer()
-    except Exception:
-        pass
     ident, req, key, offset = query.data.split("_")
     curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
     if int(req) not in [query.from_user.id, 0]:
@@ -162,7 +158,7 @@ async def next_page(bot, query):
         n_offset = 0
 
     if not files:
-        return
+        return await query.answer("No more results.")
     temp.GETALL[key] = files
     temp.SHORT[query.from_user.id] = query.message.chat.id
     settings = await get_settings(query.message.chat.id)
