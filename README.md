@@ -1,10 +1,9 @@
 <h1 align="center"><b>🚩 ᴊᴀɪ ꜱʜʀɪ ʀᴀᴍ 🚩</b></h1>
 
 <p align="center">
-  <img src="https://github.com/DreamXBotz/Pics/blob/main/dreamxbotz.jpg" alt="DreamxBotz Logo">
 </p>
 
-<h1 align="center">𝓓𝓻𝓮𝓪𝓶𝔁𝓑𝓸𝓽𝔃</h1>
+<h1 align="center">AirbrotherBot</h1>
 
 ---
 
@@ -92,7 +91,7 @@ Join our support group for assistance:
 - ✅ Auto Delete Old Files  
 - ✅ …and more!
 
-📌 *To stay updated with all new features, join our [Updates Channel](https://t.me/dreamxbotz).*
+📌 *To stay updated with all new features, join our [Updates Channel](https://t.me/AirbrotherBot).*
 
 ---
 
@@ -140,7 +139,7 @@ Use at your own discretion and **always respect platform rules and copyrights**.
 
 ## 📜 License
 
-This project is licensed under the [MIT License](https://github.com/MrRaazz/DreamxBotz/blob/main/LICENSE)
+This project is licensed under the [MIT License](https://github.com/samrai6/Ironman2-/blob/DreamXBotz/LICENSE)
 
 ---
 
