@@ -15,8 +15,8 @@
       "index",
       "inline"
     ],
-    "website": "https://github.com/DreamXBotz/Auto_Filter_Bot.git",
-    "repository": "https://github.com/DreamXBotz/Auto_Filter_Bot.git",
+    "website": "https://t.me/AirbrotherBot",
+    "repository": "https://github.com/samrai6/Ironman2-",
     "env": {
         "BOT_TOKEN": {
             "description": "Your bot token.",
