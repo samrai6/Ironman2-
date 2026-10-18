@@ -474,8 +474,7 @@ async def start(client, message):
     finally:
         if sticker:
             try:
-                if sticker:
-                    await sticker.delete()
+                await sticker.delete()
             except Exception as e:
                 logger.exception(f"Error In Deleting Sticker - {e}")
                 pass
