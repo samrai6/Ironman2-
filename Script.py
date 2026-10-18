@@ -300,7 +300,7 @@ Mᴇꜱꜱᴀɢᴇ : <b>{}</b>"""
 
 <b>⚙️ sɪᴢᴇ : {file_size}</b>
 
-<a href="https://t.me/AirbrotherBot">ᴊᴏɪɴ ʙᴏᴛ</a>"""
+<a href="https://t.me/SKR_updates">@SKR_updates</a>"""
 
     
     MOVIE_UPDATE_NOTIFY_TXT = """
