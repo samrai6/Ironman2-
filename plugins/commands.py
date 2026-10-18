@@ -84,7 +84,11 @@ async def start(client, message):
                 parse_mode=enums.ParseMode.HTML
             )
             if sticker:
-                await sticker.delete()
+                if sticker:
+                    try:
+                        await sticker.delete()
+                    except Exception:
+                        pass
             await asyncio.sleep(300)
             await dlt.delete()
             return         
@@ -97,7 +101,11 @@ async def start(client, message):
             reply_markup = InlineKeyboardMarkup(buttons)
             await message.reply(script.GSTART_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME, temp.B_NAME), reply_markup=reply_markup, disable_web_page_preview=True)
             if sticker:
-                await sticker.delete()
+                if sticker:
+                    try:
+                        await sticker.delete()
+                    except Exception:
+                        pass
             await asyncio.sleep(2) 
             if not await db.get_chat(message.chat.id):
                 total=await client.get_chat_members_count(message.chat.id)
@@ -318,7 +326,11 @@ async def start(client, message):
                         parse_mode=enums.ParseMode.HTML
                     )
                     if sticker:
-                        await sticker.delete()
+                        if sticker:
+                            try:
+                                await sticker.delete()
+                            except Exception:
+                                pass
                     await asyncio.sleep(300) 
                     await n.delete()
                     await m.delete()
@@ -367,7 +379,11 @@ async def start(client, message):
                     filesarr.append(msg)
                 k = await client.send_message(chat_id=message.from_user.id, text=script.DEL_MSG.format(get_time(DELETE_TIME)), parse_mode=enums.ParseMode.HTML)
                 if sticker:
-                    await sticker.delete()
+                    if sticker:
+                        try:
+                            await sticker.delete()
+                        except Exception:
+                            pass
                 await asyncio.sleep(DELETE_TIME)
                 for x in filesarr:
                     await x.delete()
@@ -421,7 +437,11 @@ async def start(client, message):
                     quote=True, parse_mode=enums.ParseMode.HTML
                 )
                 if sticker:
-                    await sticker.delete()
+                    if sticker:
+                        try:
+                            await sticker.delete()
+                        except Exception:
+                            pass
                 await asyncio.sleep(DELETE_TIME)
                 await msg.delete()
                 await k.edit_text("<b>ʏᴏᴜʀ ᴠɪᴅᴇᴏ / ꜰɪʟᴇ ɪꜱ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ !!</b>")
@@ -461,7 +481,11 @@ async def start(client, message):
             quote=True, parse_mode=enums.ParseMode.HTML
         )
         if sticker:
-            await sticker.delete()
+            if sticker:
+                try:
+                    await sticker.delete()
+                except Exception:
+                    pass
         await asyncio.sleep(DELETE_TIME)
         await msg.delete()
         await k.edit_text("<b>ʏᴏᴜʀ ᴠɪᴅᴇᴏ / ꜰɪʟᴇ ɪꜱ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ !!</b>")
@@ -474,7 +498,11 @@ async def start(client, message):
     finally:
         if sticker:
             try:
-                await sticker.delete()
+                if sticker:
+                    try:
+                        await sticker.delete()
+                    except Exception:
+                        pass
             except Exception as e:
                 logger.exception(f"Error In Deleting Sticker - {e}")
                 pass
