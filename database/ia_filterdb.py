@@ -191,35 +191,45 @@ async def get_search_results(chat_id, query, file_type=None, max_results=None, o
 
     if ULTRA_FAST_MODE:
         limit = max_results + 1
-        find_tasks = [Media.find(filter_mongo).sort("$natural", -1).skip(offset).limit(limit).to_list(length=limit)]
         if MULTIPLE_DB:
-            find_tasks.append(Media2.find(filter_mongo).sort("$natural", -1).skip(offset).limit(limit).to_list(length=limit))
-        results = await asyncio.gather(*find_tasks)
-        files = results[0]
-        if MULTIPLE_DB and len(results) > 1:
-            files.extend(results[1])
-        files = files[:limit]
+            # Apply pagination to the combined result set, not independently to each DB.
+            fetch_limit = offset + limit
+            find_tasks = [
+                Media.find(filter_mongo).sort("$natural", -1).limit(fetch_limit).to_list(length=fetch_limit),
+                Media2.find(filter_mongo).sort("$natural", -1).limit(fetch_limit).to_list(length=fetch_limit),
+            ]
+            results = await asyncio.gather(*find_tasks)
+            combined_files = results[0] + results[1]
+            files = combined_files[offset:offset + limit]
+        else:
+            files = await Media.find(filter_mongo).sort("$natural", -1).skip(offset).limit(limit).to_list(length=limit)
         has_next_page = len(files) > max_results
         if has_next_page:
-            files = files[:-1]
+            files = files[:max_results]
         next_offset = offset + len(files) if has_next_page else ""
         total_results = offset + len(files) + (1 if has_next_page else 0)
     else:
         count_tasks = [Media.count_documents(filter_mongo)]
-        find_tasks = [Media.find(filter_mongo).sort("$natural", -1).skip(offset).limit(max_results).to_list(length=max_results)]
         if MULTIPLE_DB:
+            fetch_limit = offset + max_results
+            find_tasks = [
+                Media.find(filter_mongo).sort("$natural", -1).limit(fetch_limit).to_list(length=fetch_limit),
+                Media2.find(filter_mongo).sort("$natural", -1).limit(fetch_limit).to_list(length=fetch_limit),
+            ]
             count_tasks.append(Media2.count_documents(filter_mongo))
-            find_tasks.append(Media2.find(filter_mongo).sort("$natural", -1).skip(offset).limit(max_results).to_list(length=max_results))
-        
+        else:
+            find_tasks = [Media.find(filter_mongo).sort("$natural", -1).skip(offset).limit(max_results).to_list(length=max_results)]
+
         count_results, find_results = await asyncio.gather(
             asyncio.gather(*count_tasks),
             asyncio.gather(*find_tasks)
         )
         total_results = sum(count_results)
-        files = find_results[0]
-        if MULTIPLE_DB and len(find_results) > 1:
-            files.extend(find_results[1])
-        files = files[:max_results]
+        if MULTIPLE_DB:
+            combined_files = find_results[0] + find_results[1]
+            files = combined_files[offset:offset + max_results]
+        else:
+            files = find_results[0]
         next_offset = offset + len(files)
         if next_offset >= total_results:
             next_offset = ""
