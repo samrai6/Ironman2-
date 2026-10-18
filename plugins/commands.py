@@ -427,8 +427,9 @@ async def start(client, message):
                 if DREAMX_CAPTION:
                     try:
                         f_caption=DREAMX_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
-                    except:
-                        return
+                    except Exception as e:
+                        logger.exception("Caption formatting failed; using filename fallback: %s", e)
+                        f_caption = f"<code>{title or ''}</code>"
                 await msg.edit_caption(
                     f_caption,
                     reply_markup=InlineKeyboardMarkup(btn)
