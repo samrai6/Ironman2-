@@ -295,7 +295,7 @@ Iᴅ : <code>{}</code>
 Nᴀᴍᴇ : {}
 
 Mᴇꜱꜱᴀɢᴇ : <b>{}</b>"""
-    CAPTION = """<b><a href="https://t.me/SKR_updates">{file_name}</a></b>\n\n<b>⚜️ Powered By : <a href="https://t.me/SKR_updates">[ @SKR_updates ]</a></b>"""
+    CAPTION = """<a href="https://t.me/SKR_updates"><b>{file_name}</b>\n\n<b>⚜️ Powered By : [ @SKR_updates ]</b></a>"""
 
     
     MOVIE_UPDATE_NOTIFY_TXT = """
