@@ -27,6 +27,15 @@ logger = logging.getLogger(__name__)
 TIMEZONE = "Asia/Kolkata"
 BATCH_FILES = {}
 
+
+def ensure_skr_updates_caption(caption):
+    """Keep the SKR updates channel link in every delivered file caption."""
+    caption = caption or ""
+    if "t.me/SKR_updates" in caption or "@SKR_updates" in caption:
+        return caption
+    link = '<a href="https://t.me/SKR_updates">@SKR_updates</a>'
+    return f"{caption.rstrip()}\n\n{link}" if caption.strip() else link
+
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     sticker = None
@@ -367,6 +376,7 @@ async def start(client, message):
                             f_caption = f_caption
                     if f_caption is None:
                         f_caption = f"{clean_filename(files1.file_name)}"
+                    f_caption = ensure_skr_updates_caption(f_caption)
                     btn = await stream_buttons(message.from_user.id, file_id)
                     msg = await client.send_cached_media(
                         chat_id=message.from_user.id,
@@ -430,6 +440,7 @@ async def start(client, message):
                     except Exception as e:
                         logger.exception("Caption formatting failed; using filename fallback: %s", e)
                         f_caption = f"<code>{title or ''}</code>"
+                f_caption = ensure_skr_updates_caption(f_caption)
                 await msg.edit_caption(
                     f_caption,
                     reply_markup=InlineKeyboardMarkup(btn)
@@ -468,6 +479,7 @@ async def start(client, message):
 
         if f_caption is None:
             f_caption = clean_filename(files.file_name)
+        f_caption = ensure_skr_updates_caption(f_caption)
         btn = await stream_buttons(message.from_user.id, file_id)
         msg = await client.send_cached_media(
             chat_id=message.from_user.id,
