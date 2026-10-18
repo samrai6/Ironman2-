@@ -298,7 +298,9 @@ Mᴇꜱꜱᴀɢᴇ : <b>{}</b>"""
     
     CAPTION = """<b>🗿 ғɪʟᴇɴᴀᴍᴇ : {file_name}</b>
 
-<b>⚙️ sɪᴢᴇ : {file_size}</b> @SKR_updates"""
+<b>⚙️ sɪᴢᴇ : {file_size}</b>
+
+<a href="https://t.me/AirbrotherBot">ᴊᴏɪɴ ʙᴏᴛ</a>"""
 
     
     MOVIE_UPDATE_NOTIFY_TXT = """
