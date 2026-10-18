@@ -1054,6 +1054,21 @@ async def save_caption(client, message):
     await client.send_message(LOG_API_CHANNEL, f"#Set_Caption\n\nɢʀᴏᴜᴘ ɴᴀᴍᴇ : {title}\n\nɢʀᴏᴜᴘ ɪᴅ: {grp_id}\nɪɴᴠɪᴛᴇ ʟɪɴᴋ : {invite_link}\n\nᴜᴘᴅᴀᴛᴇᴅ ʙʏ : {message.from_user.username}")
 
 
+@Client.on_message(filters.command("reset_caption"))
+async def reset_caption(client, message):
+    grp_id = message.chat.id
+    if message.chat.type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
+        return await message.reply_text("<b>Use this command in your group.</b>")
+    if not message.from_user or not await is_check_admin(client, grp_id, message.from_user.id):
+        return await message.reply_text(script.NT_ADMIN_ALRT_TXT)
+    await save_group_settings(grp_id, "caption", CUSTOM_FILE_CAPTION)
+    await message.reply_text(
+        "<b>File caption reset to the current default caption.</b>\n\n"
+        "If the old caption still appears, check the hosting environment variable "
+        "<code>CUSTOM_FILE_CAPTION</code> and redeploy."
+    )
+
+
 @Client.on_message(filters.command(["set_tutorial", "set_tutorial_2", "set_tutorial_3"]))
 async def set_tutorial(client, message: Message):
     grp_id = message.chat.id
