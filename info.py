@@ -18,9 +18,9 @@ def is_enabled(value, default):
 # Bot Information Configuration
 # ============================
 SESSION = environ.get('SESSION', 'SKR')   # Session name for the bot
-API_ID = int(environ.get('API_ID', '20196547')) # API ID from my.telegram.org
-API_HASH = environ.get('API_HASH', 'f1d32b4f43d2e1d50b863b1a77ddf2a2')  # API Hash from my.telegram.org
-BOT_TOKEN = environ.get('BOT_TOKEN', "7974987122:AAEUdxDZq2KGvjlZ4jHWQRBLL-zT3YaTjEk")    # Bot token from @BotFather
+API_ID = int(environ.get('API_ID', '')) # API ID from my.telegram.org
+API_HASH = environ.get('API_HASH', '')  # API Hash from my.telegram.org
+BOT_TOKEN = environ.get('BOT_TOKEN', "")    # Bot token from @BotFather
 
 # ============================
 # Bot Settings Configuration
