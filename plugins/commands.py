@@ -36,6 +36,67 @@ def ensure_skr_updates_caption(caption):
     link = '<a href="https://t.me/SKR_updates">@SKR_updates</a>'
     return f"{caption.rstrip()}\n\n{link}" if caption.strip() else link
 
+def build_file_metadata(file_name, file_caption):
+    """Read technical details from the indexed filename and saved source caption."""
+    source = f"{file_name or ''}\n{file_caption or ''}"
+    plain = re.sub(r"<[^>]+>", " ", source)
+    plain = re.sub(r"&nbsp;|&#160;", " ", plain, flags=re.IGNORECASE)
+    plain = re.sub(r"\s+", " ", plain).strip()
+
+    resolution_match = re.search(r"\b(2160|1440|1080|720|576|540|480|360)p\b", plain, re.IGNORECASE)
+    resolution = f"{resolution_match.group(1)}p" if resolution_match else ""
+
+    codec = ""
+    if re.search(r"\b(hevc|h[.]?265|x265)\b", plain, re.IGNORECASE):
+        codec = "HEVC"
+    elif re.search(r"\b(avc|h[.]?264|x264)\b", plain, re.IGNORECASE):
+        codec = "AVC"
+    bit_depth = "10bit" if re.search(r"\b(10[ -]?bit|10bit)\b", plain, re.IGNORECASE) else ""
+
+    duration = ""
+    duration_match = re.search(
+        r"duration\s*[:：]\s*(\d{1,2}:\d{2}:\d{2}|\d{1,2}\s*h(?:ours?)?\s*\d{1,2}\s*m(?:in(?:s|utes?)?)?\s*\d{1,2}\s*s?)",
+        plain, re.IGNORECASE
+    )
+    if duration_match:
+        raw_duration = duration_match.group(1)
+        clock = re.search(r"^(\d{1,2}):(\d{2}):(\d{2})$", raw_duration)
+        if clock:
+            duration = f"{int(clock.group(1)):02}:{clock.group(2)}:{clock.group(3)}"
+        else:
+            parts = re.search(r"(\d{1,2})\s*h.*?(\d{1,2})\s*m.*?(\d{1,2})\s*s?", raw_duration, re.IGNORECASE)
+            if parts:
+                duration = f"{int(parts.group(1)):02}:{int(parts.group(2)):02}:{int(parts.group(3)):02}"
+
+    languages = ""
+    audio_match = re.search(r"(?:audio(?:\s+languages?)?|languages?)\s*[:：]\s*([^\n<]+)", file_caption or "", re.IGNORECASE)
+    if audio_match:
+        languages = re.sub(r"\s*[•|].*$", "", audio_match.group(1)).strip(" :-")
+        languages = re.sub(r"\s*,\s*", ", ", languages)
+
+    first_line = " ".join(part for part in (resolution, codec, bit_depth) if part)
+    details = []
+    if first_line or duration:
+        details.append("🎬 " + " ".join(part for part in (first_line, f"⏳ {duration}" if duration else "") if part))
+    if languages:
+        details.append(f"🔊 {languages}")
+    return "\n".join(details)
+
+
+def add_file_metadata(caption, file_name, file_caption):
+    """Insert extracted metadata below the filename without downloading the media."""
+    metadata = build_file_metadata(file_name, file_caption)
+    caption = caption or (file_name or "")
+    if not metadata:
+        return caption
+    if metadata.casefold() in caption.casefold():
+        return caption
+    if "</b>" in caption:
+        return caption.replace("</b>", "</b>\n\n" + metadata, 1)
+    if "</code>" in caption:
+        return caption.replace("</code>", "</code>\n\n" + metadata, 1)
+    return f"{caption.rstrip()}\n\n{metadata}" if caption.strip() else metadata
+
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     sticker = None
@@ -376,6 +437,7 @@ async def start(client, message):
                             f_caption = f_caption
                     if f_caption is None:
                         f_caption = f"{clean_filename(files1.file_name)}"
+                    f_caption = add_file_metadata(f_caption, files1.file_name, files1.caption)
                     f_caption = ensure_skr_updates_caption(f_caption)
                     btn = await stream_buttons(message.from_user.id, file_id)
                     msg = await client.send_cached_media(
@@ -440,6 +502,9 @@ async def start(client, message):
                     except Exception as e:
                         logger.exception("Caption formatting failed; using filename fallback: %s", e)
                         f_caption = f"<code>{title or ''}</code>"
+                db_details = await get_file_details(file_id)
+                db_caption = db_details[0].caption if db_details else getattr(msg, "caption", None)
+                f_caption = add_file_metadata(f_caption, file.file_name, db_caption)
                 f_caption = ensure_skr_updates_caption(f_caption)
                 await msg.edit_caption(
                     f_caption,
@@ -479,6 +544,7 @@ async def start(client, message):
 
         if f_caption is None:
             f_caption = clean_filename(files.file_name)
+        f_caption = add_file_metadata(f_caption, files.file_name, files.caption)
         f_caption = ensure_skr_updates_caption(f_caption)
         btn = await stream_buttons(message.from_user.id, file_id)
         msg = await client.send_cached_media(
