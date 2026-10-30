@@ -69,10 +69,10 @@ def build_file_metadata(file_name, file_caption):
                 duration = f"{int(parts.group(1)):02}:{int(parts.group(2)):02}:{int(parts.group(3)):02}"
 
     languages = ""
-    audio_match = re.search(r"(?:audio(?:\\s+languages?)?|languages?)\\s*[:：]\\s*([^\\n<]+)", file_caption or "", re.IGNORECASE)
+    audio_match = re.search(r"(?:audio(?:\s+languages?)?|languages?)\s*[:：]\s*([^\n<]+)", file_caption or "", re.IGNORECASE)
     if audio_match:
-        languages = re.sub(r"\\s*[•|].*$", "", audio_match.group(1)).strip(" :-")
-        languages = re.sub(r"\\s*,\\s*", ", ", languages)
+        languages = re.sub(r"\s*[•|].*$", "", audio_match.group(1)).strip(" :-")
+        languages = re.sub(r"\s*,\s*", ", ", languages)
     else:
         # If the saved caption has no Audio field, infer languages from the indexed filename.
         known_languages = [
@@ -81,10 +81,10 @@ def build_file_metadata(file_name, file_caption):
             "Korean", "Chinese", "Arabic", "Spanish", "French", "German",
             "Russian", "Indonesian", "Thai", "Turkish", "Portuguese"
         ]
-        filename_text = re.sub(r"[._+\\-]+", " ", file_name or "")
+        filename_text = re.sub(r"[._+\-]+", " ", file_name or "")
         detected = [
             language for language in known_languages
-            if re.search(rf"\\b{re.escape(language)}\\b", filename_text, re.IGNORECASE)
+            if re.search(rf"\b{re.escape(language)}\b", filename_text, re.IGNORECASE)
         ]
         if detected:
             languages = " + ".join(detected)
