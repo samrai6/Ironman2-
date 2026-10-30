@@ -94,7 +94,7 @@ def build_file_metadata(file_name, file_caption):
     if first_line or duration:
         details.append("🎬 " + " ".join(part for part in (first_line, f"⏳ {duration}" if duration else "") if part))
     if languages:
-        details.append(f"🔊 {languages}")
+        details.append(f"🔊 Audio : {languages}")
     return "\n".join(details)
 
 
