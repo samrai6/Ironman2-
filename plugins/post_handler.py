@@ -94,7 +94,7 @@ LANGUAGES = [
 ]
 RESOLUTIONS = [
     
-    "144p", "240p", "480p", "720p", "1080p", "1440p", "2160p", "4320p",
+    "144p", "240p", "480p", "540p", "720p", "1080p", "1440p", "2160p", "4320p",
     
     "BluRay", "BDRip", "WEB-DL", "VOD", "WEBRip", "HDTV",
     "DVDRip", "DVDScr", "TS", "CAM",
