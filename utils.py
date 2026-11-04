@@ -934,7 +934,7 @@ def clean_search_text(search_raw: str) -> str:
     phrases = re.split(r'\s{2,}', search_lower.strip())
     lang_pattern = r'\b(hin(di)?|eng(lish)?|mal(ayalam)?|tam(il)?|tel(ugu)?|kan(nada)?|ben(gali)?|mar(athi)?|urdu|guj(arat)?|punj(abi)?)\b'
     season_pattern = r's(eason)?\s*0*\d+'
-    quality_pattern = r'\b(360p|480p|720p|1080p|1440p|2160p|4k)\b'  
+    quality_pattern = r'\b(360p|480p|540p|720p|1080p|1440p|2160p|4k)\b'  
     cleaned_phrases = []
     for phrase in phrases:
         phrase = re.sub(season_pattern, '', phrase, flags=re.IGNORECASE)
