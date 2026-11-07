@@ -107,8 +107,8 @@ TUTORIAL_2 = environ.get("TUTORIAL_2", "https://t.me/AirbrotherBot")   # Second 
 TUTORIAL_3 = environ.get("TUTORIAL_3", "https://t.me/AirbrotherBot")   # Third tutorial link for verification
 
 # Verification (Must Fill All Veriables. Else You Got Error
-SHORTENER_API = environ.get("SHORTENER_API", "b5fcb2bfdbae39650d41b2ec52af53e82f7922f0") # Shortener API key
-SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "Shortxlinks.com") # Shortener website
+SHORTENER_API = environ.get("SHORTENER_API", "cacd173bf30f990a5cab643cd02e8a03a2bb5c86") # Shortener API key
+SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "liteshort.com") # Shortener website
 
 SHORTENER_API2 = environ.get("SHORTENER_API2", "7315d248850191c0037592e9869b3f3697287c7d")  # Shortener API key for second website
 SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "vplink.in") # Shortener website for second website
