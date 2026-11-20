@@ -51,16 +51,71 @@ async def broadcast_users(bot, message):
     start_time = time.time()
     cancelled = False
 
+    collection = db.db["broadcasts"]
+    broadcast_id = str(time.time_ns())
+    await collection.insert_one({
+        "broadcast_id": broadcast_id,
+        "type": "meta",
+        "status": "running",
+        "cancel_requested": False,
+        "created_at": time.time()
+    })
+
     async def send(user):
+        chat_id = int(user["id"])
         try:
-            _, result = await users_broadcast(int(user["id"]), b_msg, is_pin)
-            return result
+            sent = await b_msg.copy(chat_id=chat_id)
+            record = await collection.insert_one({
+                "broadcast_id": broadcast_id,
+                "type": "message",
+                "chat_id": chat_id,
+                "message_id": sent.id
+            })
+            state = await collection.find_one({"broadcast_id": broadcast_id, "type": "meta"})
+            if state and state.get("cancel_requested"):
+                try:
+                    await bot.delete_messages(chat_id, sent.id)
+                    await collection.delete_one({"_id": record.inserted_id})
+                except Exception:
+                    logging.exception(f"Could not delete just-sent broadcast from {chat_id}")
+                return "Cancelled"
+            if is_pin:
+                await sent.pin(both_sides=True)
+            return "Success"
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
+            try:
+                sent = await b_msg.copy(chat_id=chat_id)
+                record = await collection.insert_one({
+                    "broadcast_id": broadcast_id,
+                    "type": "message",
+                    "chat_id": chat_id,
+                    "message_id": sent.id
+                })
+                state = await collection.find_one({"broadcast_id": broadcast_id, "type": "meta"})
+                if state and state.get("cancel_requested"):
+                    try:
+                        await bot.delete_messages(chat_id, sent.id)
+                        await collection.delete_one({"_id": record.inserted_id})
+                    except Exception:
+                        logging.exception(f"Could not delete just-sent broadcast from {chat_id}")
+                    return "Cancelled"
+                if is_pin:
+                    await sent.pin(both_sides=True)
+                return "Success"
+            except Exception:
+                logging.exception(f"Error retrying broadcast to {chat_id}")
+                return "Error"
         except Exception as e:
-            logging.exception(f"Error sending broadcast to {user['id']}")
-            return "Error"
+            logging.exception(f"Error sending broadcast to {chat_id}")
+            return "Blocked" if "USER_IS_BLOCKED" in str(e) else "Error"
 
     async with lock:
         for i in range(0, total_users, 100):
+            broadcast_state = await collection.find_one({"broadcast_id": broadcast_id, "type": "meta"})
+            if broadcast_state and broadcast_state.get("cancel_requested"):
+                cancelled = True
+                break
             if temp.B_USERS_CANCEL:
                 temp.B_USERS_CANCEL = False
                 cancelled = True
@@ -103,7 +158,49 @@ async def broadcast_users(bot, message):
         f"🗑️ Deleted: <code>{deleted}</code>\n"
         f"❌ Failed: <code>{failed}</code>"
     )
+    await collection.update_one(
+        {"broadcast_id": broadcast_id, "type": "meta", "status": {"$nin": ["deleting", "deleted", "delete_failed"]}},
+        {"$set": {"status": "cancelled" if cancelled else "completed"}}
+    )
     await dreamxbotz_status_msg.edit(final_status)
+
+
+@Client.on_message(filters.command("delbroadcast") & filters.user(ADMINS) & filters.private)
+async def delete_broadcast(bot, message):
+    collection = db.db["broadcasts"]
+    latest = await collection.find_one(
+        {"type": "meta", "status": {"$nin": ["deleted"]}},
+        sort=[("_id", -1)]
+    )
+    if not latest:
+        return await message.reply("No broadcast messages found to delete.")
+
+    broadcast_id = latest["broadcast_id"]
+    await collection.update_one(
+        {"broadcast_id": broadcast_id, "type": "meta"},
+        {"$set": {"cancel_requested": True, "status": "deleting"}}
+    )
+    status = await message.reply("🗑️ Deleting the latest broadcast from users' chats...")
+    deleted_count = failed_count = 0
+
+    async for record in collection.find({"broadcast_id": broadcast_id, "type": "message"}):
+        try:
+            await bot.delete_messages(int(record["chat_id"]), int(record["message_id"]))
+            await collection.delete_one({"_id": record["_id"]})
+            deleted_count += 1
+        except Exception as e:
+            logging.exception(f"Failed to delete broadcast message for {record['chat_id']}: {e}")
+            failed_count += 1
+
+    await collection.update_one(
+        {"broadcast_id": broadcast_id, "type": "meta"},
+        {"$set": {"status": "deleted" if failed_count == 0 else "delete_failed"}}
+    )
+    await status.edit(
+        f"✅ <b>Broadcast deletion finished.</b>\\n"
+        f"🗑️ Deleted: <code>{deleted_count}</code>\\n"
+        f"❌ Failed: <code>{failed_count}</code>"
+    )
 
 
 @Client.on_message(filters.command("grp_broadcast") & filters.user(ADMINS) & filters.private)
