@@ -197,8 +197,8 @@ async def delete_broadcast(bot, message):
         {"$set": {"status": "deleted" if failed_count == 0 else "delete_failed"}}
     )
     await status.edit(
-        f"✅ <b>Broadcast deletion finished.</b>\\n"
-        f"🗑️ Deleted: <code>{deleted_count}</code>\\n"
+        f"✅ <b>Broadcast deletion finished.</b>\n"
+        f"🗑️ Deleted: <code>{deleted_count}</code>\n"
         f"❌ Failed: <code>{failed_count}</code>"
     )
 
