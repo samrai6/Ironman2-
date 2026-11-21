@@ -91,7 +91,7 @@ async def pm_fsub_callbacks(client, query):
         except ValueError:
             return await query.answer("Invalid channel ID.", show_alert=True)
         if channel_id not in channels:
-            return await query.answer("Channel not found.", show_alert=True)
+            return await query.message.edit_text("Channel not found.")
         channels.remove(channel_id)
         await mdb.set_pm_fsub_channels(channels)
         if channels:
