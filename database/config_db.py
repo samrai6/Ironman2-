@@ -34,6 +34,18 @@ class Database:
         results = await self.col.aggregate(pipeline).to_list(limit)
         return [result['_id'] for result in results]
     
+
+    async def get_pm_fsub_channels(self):
+        config = await self.config_col.find_one({"_id": "pm_fsub_channels"})
+        return config.get("channels", []) if config else []
+
+    async def set_pm_fsub_channels(self, channels):
+        await self.config_col.update_one(
+            {"_id": "pm_fsub_channels"},
+            {"$set": {"channels": list(dict.fromkeys(int(ch) for ch in channels))}},
+            upsert=True
+        )
+
     async def delete_all_messages(self):
         await self.col.delete_many({})
 
