@@ -51,8 +51,8 @@ async def pm_fsub_callbacks(client, query):
     channels = await mdb.get_pm_fsub_channels()
 
     if action == "view":
-        text = "<b>PM Force Subscribe Channels</b>\\n\\n"
-        text += "\\n".join(f"<code>{channel}</code>" for channel in channels) if channels else "No PM FS channels added."
+        text = "<b>PM Force Subscribe Channels</b>\n\n"
+        text += "\n".join(f"<code>{channel}</code>" for channel in channels) if channels else "No PM FS channels added."
         return await query.message.edit_text(text)
 
     if action == "add":
@@ -107,7 +107,7 @@ async def pm_fsub_callbacks(client, query):
         return await query.message.edit_text("All PM FS channels removed.")
 
 
-@Client.on_message(filters.private & filters.text & filters.incoming & filters.user(ADMINS))
+@Client.on_message(filters.private & filters.text & filters.incoming & filters.user(ADMINS) & filters.create(lambda _, __, message: bool(message.from_user and message.from_user.id in PM_FSUB_PENDING)))
 async def pm_fsub_add_channel(client, message):
     if not PM_FSUB_PENDING.get(message.from_user.id):
         return
