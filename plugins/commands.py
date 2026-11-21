@@ -25,7 +25,113 @@ logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 TIMEZONE = "Asia/Kolkata"
-BATCH_FILES = {}
+BATCH_FILES = {}\n\n
+PM_FSUB_PENDING = {}
+
+@Client.on_message(filters.private & filters.command("fsb") & filters.user(ADMINS))
+async def pm_fsub_manager(client, message):
+    buttons = [
+        [InlineKeyboardButton("📋 View FS", callback_data="pmfs_view"),
+         InlineKeyboardButton("➕ Add FS", callback_data="pmfs_add")],
+        [InlineKeyboardButton("➖ Remove FS", callback_data="pmfs_remove")]
+    ]
+    await message.reply_text(
+        "<b>PM Force Subscribe Manager</b>",
+        reply_markup=InlineKeyboardMarkup(buttons)
+    )
+
+
+@Client.on_callback_query(filters.regex(r"^pmfs_"))
+async def pm_fsub_callbacks(client, query):
+    if query.from_user.id not in ADMINS:
+        return await query.answer("Not allowed!", show_alert=True)
+
+    action = query.data[len("pmfs_"):]
+    channels = await mdb.get_pm_fsub_channels()
+
+    if action == "view":
+        text = "<b>PM Force Subscribe Channels</b>\\n\\n"
+        text += "\\n".join(f"<code>{channel}</code>" for channel in channels) if channels else "No PM FS channels added."
+        return await query.message.edit_text(text)
+
+    if action == "add":
+        PM_FSUB_PENDING[query.from_user.id] = True
+        await query.answer()
+        return await query.message.reply_text(
+            "Send the channel ID now. Example: <code>-1001234567890</code>"
+        )
+
+    if action == "remove":
+        if not channels:
+            return await query.answer("No PM FS channels to remove.", show_alert=True)
+        buttons = [
+            [InlineKeyboardButton(str(channel), callback_data=f"pmfs_del_{channel}")]
+            for channel in channels
+        ]
+        buttons.append([InlineKeyboardButton("⬅️ Back", callback_data="pmfs_back")])
+        return await query.message.edit_text(
+            "<b>Select a channel to remove:</b>",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    if action == "back":
+        buttons = [
+            [InlineKeyboardButton("📋 View FS", callback_data="pmfs_view"),
+             InlineKeyboardButton("➕ Add FS", callback_data="pmfs_add")],
+            [InlineKeyboardButton("➖ Remove FS", callback_data="pmfs_remove")]
+        ]
+        return await query.message.edit_text(
+            "<b>PM Force Subscribe Manager</b>",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    if action.startswith("del_"):
+        try:
+            channel_id = int(action[4:])
+        except ValueError:
+            return await query.answer("Invalid channel ID.", show_alert=True)
+        if channel_id not in channels:
+            return await query.answer("Channel not found.", show_alert=True)
+        channels.remove(channel_id)
+        await mdb.set_pm_fsub_channels(channels)
+        await query.answer("Channel removed.")
+        if channels:
+            buttons = [
+                [InlineKeyboardButton(str(channel), callback_data=f"pmfs_del_{channel}")]
+                for channel in channels
+            ]
+            buttons.append([InlineKeyboardButton("⬅️ Back", callback_data="pmfs_back")])
+            return await query.message.edit_text(
+                "<b>Select a channel to remove:</b>",
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+        return await query.message.edit_text("All PM FS channels removed.")
+
+
+@Client.on_message(filters.private & filters.text & filters.incoming & filters.user(ADMINS))
+async def pm_fsub_add_channel(client, message):
+    if not PM_FSUB_PENDING.get(message.from_user.id):
+        return
+    try:
+        channel_id = int(message.text.strip())
+        if channel_id >= 0:
+            raise ValueError
+    except (TypeError, ValueError):
+        return await message.reply_text(
+            "Invalid channel ID. Send a negative channel ID, e.g. <code>-1001234567890</code>."
+        )
+
+    channels = await mdb.get_pm_fsub_channels()
+    if channel_id in channels:
+        PM_FSUB_PENDING.pop(message.from_user.id, None)
+        return await message.reply_text("This channel is already in PM Force Subscribe.")
+    channels.append(channel_id)
+    await mdb.set_pm_fsub_channels(channels)
+    PM_FSUB_PENDING.pop(message.from_user.id, None)
+    await message.reply_text(f"✅ Added <code>{channel_id}</code> to PM Force Subscribe.")
+
+
+
 
 
 def ensure_skr_updates_caption(caption):
@@ -346,7 +452,7 @@ async def start(client, message):
                 btn = []
                 chat = grp_id
                 settings      = await get_settings(chat)
-                fsub_channels = list(dict.fromkeys((settings.get('fsub', []) if settings else [])+ AUTH_CHANNELS)) 
+                fsub_channels = list(dict.fromkeys((settings.get('fsub', []) if settings else []) + AUTH_CHANNELS + await mdb.get_pm_fsub_channels())) 
 
                 if fsub_channels:
                     btn += await is_subscribed(client, message.from_user.id, fsub_channels)
