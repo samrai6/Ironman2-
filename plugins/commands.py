@@ -47,6 +47,7 @@ async def pm_fsub_callbacks(client, query):
         return await query.answer("Not allowed!", show_alert=True)
 
     action = query.data[len("pmfs_"):]
+    await query.answer()
     channels = await mdb.get_pm_fsub_channels()
 
     if action == "view":
@@ -56,14 +57,13 @@ async def pm_fsub_callbacks(client, query):
 
     if action == "add":
         PM_FSUB_PENDING[query.from_user.id] = True
-        await query.answer()
         return await query.message.reply_text(
             "Send the channel ID now. Example: <code>-1001234567890</code>"
         )
 
     if action == "remove":
         if not channels:
-            return await query.answer("No PM FS channels to remove.", show_alert=True)
+            return await query.message.edit_text("No PM FS channels to remove.")
         buttons = [
             [InlineKeyboardButton(str(channel), callback_data=f"pmfs_del_{channel}")]
             for channel in channels
@@ -94,7 +94,6 @@ async def pm_fsub_callbacks(client, query):
             return await query.answer("Channel not found.", show_alert=True)
         channels.remove(channel_id)
         await mdb.set_pm_fsub_channels(channels)
-        await query.answer("Channel removed.")
         if channels:
             buttons = [
                 [InlineKeyboardButton(str(channel), callback_data=f"pmfs_del_{channel}")]
